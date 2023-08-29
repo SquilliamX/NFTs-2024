@@ -1,112 +1,27 @@
-Foundry NFT
+Happy SVG: data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIHhtbG5z
+PSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAw
+IiBmaWxsPSJ5ZWxsb3ciIHI9Ijc4IiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjMiIC8+
+CiAgPGcgY2xhc3M9ImV5ZXMiPgogICAgPGNpcmNsZSBjeD0iNDUiIGN5PSIxMDAiIHI9IjEyIiAv
+PgogICAgPGNpcmNsZSBjeD0iMTU0IiBjeT0iMTAwIiByPSIxMiIgLz4KICA8L2c+CiAgPHBhdGgg
+ZD0ibTEzNi44MSAxMTYuNTNjLjY5IDI2LjE3LTY0LjExIDQyLTgxLjUyLS43MyIgc3R5bGU9ImZp
+bGw6bm9uZTsgc3Ryb2tlOiBibGFjazsgc3Ryb2tlLXdpZHRoOiAzOyIgLz4KPC9zdmc+
 
-
-We go through creating 2 different kinds of NFTs.
-
-An IPFS Hosted NFT
-An SVG NFT (Hosted 100% on-chain)
-
-NFT Pug NFT Happy NFT Shiba NFT Frown NFT St.Bernard
-
-
-Foundry NFT
-Getting Started
-Requirements
-Quickstart
-Optional Gitpod
-Usage
-Start a local node
-Deploy
-Deploy - Other Network
-Testing
-Test Coverage
-Deployment to a testnet or mainnet
-Scripts
-Base64
-Estimate gas
-Formatting
-Thank you!
-Getting Started
-Requirements
-git
-You'll know you did it right if you can run git --version and you see a response like git version x.x.x
-foundry
-You'll know you did it right if you can run forge --version and you see a response like forge 0.2.0 (816e00b 2023-03-16T00:05:26.396218Z)
-Quickstart
-git clone https://github.com/Cyfrin/foundry-nft-f23
-cd foundry-nft-f23
-forge install
-forge build
-Optional Gitpod
-If you can't or don't want to run and install locally, you can work with this repo in Gitpod. If you do this, you can skip the clone this repo part.
-
-Open in Gitpod
-
-Usage
-Start a local node
-make anvil
-Deploy
-This will default to your local node. You need to have it running in another terminal in order for it to deploy.
-
-make deploy
-Deploy - Other Network
-See below
-
-Testing
-We talk about 4 test tiers in the video.
-
-Unit
-Integration
-Forked
-Staging
-This repo we cover #1 and #3.
-
-forge test
-or
-
-forge test --fork-url $SEPOLIA_RPC_URL
-Test Coverage
-forge coverage
-Deployment to a testnet or mainnet
-Setup environment variables
-You'll want to set your SEPOLIA_RPC_URL and PRIVATE_KEY as environment variables. You can add them to a .env file, similar to what you see in .env.example.
-
-PRIVATE_KEY: The private key of your account (like from metamask). NOTE: FOR DEVELOPMENT, PLEASE USE A KEY THAT DOESN'T HAVE ANY REAL FUNDS ASSOCIATED WITH IT.
-You can learn how to export it here.
-SEPOLIA_RPC_URL: This is url of the goerli testnet node you're working with. You can get setup with one for free from Alchemy
-Optionally, add your ETHERSCAN_API_KEY if you want to verify your contract on Etherscan.
-
-Get testnet ETH
-Head over to faucets.chain.link and get some tesnet ETH. You should see the ETH show up in your metamask.
-
-Deploy (IPFS NFT)
-make deploy ARGS="--network sepolia"
-Deploy (SVG NFT)
-make deploySvg ARGS="--network sepolia"
-Scripts
-After deploy to a testnet or local net, you can run the scripts.
-
-Using cast deployed locally example:
-
-cast send <RAFFLE_CONTRACT_ADDRESS> "enterRaffle()" --value 0.1ether --private-key <PRIVATE_KEY> --rpc-url $SEPOLIA_RPC_URL
-or, to create a ChainlinkVRF Subscription:
-
-make createSubscription ARGS="--network sepolia"
-Base64
-To get the base64 of an image, you can use the following command:
-
-echo "data:image/svg+xml;base64,$(base64 -i ./images/dynamicNft/happy.svg)"
-Then, you can get the base64 encoding of the json object by placing the imageURI into happy_image_uri.json then running:
-
-echo "data:application/json;base64,$(base64 -i ./images/dynamicNft/happy_image_uri.json)"
-Estimate gas
-You can estimate how much gas things cost by running:
-
-forge snapshot
-And you'll see and output file called .gas-snapshot
-
-Formatting
-To run code formatting:
-
-forge fmt
-Thank you!
+Sad SVG: data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8c3ZnIHdpZHRoPSIxMDI0cHgi
+IGhlaWdodD0iMTAyNHB4IiB2aWV3Qm94PSIwIDAgMTAyNCAxMDI0IiB4bWxucz0iaHR0cDovL3d3
+dy53My5vcmcvMjAwMC9zdmciPgogIDxwYXRoIGZpbGw9IiMzMzMiIGQ9Ik01MTIgNjRDMjY0LjYg
+NjQgNjQgMjY0LjYgNjQgNTEyczIwMC42IDQ0OCA0NDggNDQ4IDQ0OC0yMDAuNiA0NDgtNDQ4Uzc1
+OS40IDY0IDUxMiA2NHptMCA4MjBjLTIwNS40IDAtMzcyLTE2Ni42LTM3Mi0zNzJzMTY2LjYtMzcy
+IDM3Mi0zNzIgMzcyIDE2Ni42IDM3MiAzNzItMTY2LjYgMzcyLTM3MiAzNzJ6Ii8+CiAgPHBhdGgg
+ZmlsbD0iI0U2RTZFNiIgZD0iTTUxMiAxNDBjLTIwNS40IDAtMzcyIDE2Ni42LTM3MiAzNzJzMTY2
+LjYgMzcyIDM3MiAzNzIgMzcyLTE2Ni42IDM3Mi0zNzItMTY2LjYtMzcyLTM3Mi0zNzJ6TTI4OCA0
+MjFhNDguMDEgNDguMDEgMCAwIDEgOTYgMCA0OC4wMSA0OC4wMSAwIDAgMS05NiAwem0zNzYgMjcy
+aC00OC4xYy00LjIgMC03LjgtMy4yLTguMS03LjRDNjA0IDYzNi4xIDU2Mi41IDU5NyA1MTIgNTk3
+cy05Mi4xIDM5LjEtOTUuOCA4OC42Yy0uMyA0LjItMy45IDcuNC04LjEgNy40SDM2MGE4IDggMCAw
+IDEtOC04LjRjNC40LTg0LjMgNzQuNS0xNTEuNiAxNjAtMTUxLjZzMTU1LjYgNjcuMyAxNjAgMTUx
+LjZhOCA4IDAgMCAxLTggOC40em0yNC0yMjRhNDguMDEgNDguMDEgMCAwIDEgMC05NiA0OC4wMSA0
+OC4wMSAwIDAgMSAwIDk2eiIvPgogIDxwYXRoIGZpbGw9IiMzMzMiIGQ9Ik0yODggNDIxYTQ4IDQ4
+IDAgMSAwIDk2IDAgNDggNDggMCAxIDAtOTYgMHptMjI0IDExMmMtODUuNSAwLTE1NS42IDY3LjMt
+MTYwIDE1MS42YTggOCAwIDAgMCA4IDguNGg0OC4xYzQuMiAwIDcuOC0zLjIgOC4xLTcuNCAzLjct
+NDkuNSA0NS4zLTg4LjYgOTUuOC04OC42czkyIDM5LjEgOTUuOCA4OC42Yy4zIDQuMiAzLjkgNy40
+IDguMSA3LjRINjY0YTggOCAwIDAgMCA4LTguNEM2NjcuNiA2MDAuMyA1OTcuNSA1MzMgNTEyIDUz
+M3ptMTI4LTExMmE0OCA0OCAwIDEgMCA5NiAwIDQ4IDQ4IDAgMSAwLTk2IDB6Ii8+Cjwvc3ZnPg==
