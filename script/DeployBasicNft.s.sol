@@ -1,4 +1,4 @@
-// SPDX-License_Identifier: MIT
+// SPDX-License-Identifier: MIT
 
 pragma solidity 0.8.19;
 
@@ -8,7 +8,7 @@ import {BasicNft} from "../src/BasicNFT.sol";
 
 // Contract for deploying our BasicNft, inheriting from Forge's Script contract
 contract DeployBasicNft is Script {
-    // Main function that will be called to deploy the contract
+    // This is the main function that will be called to deploy the contract
     // When deployed to a real network, msg.sender will be the wallet address that runs this script
     // In tests, msg.sender is a test address provided by Forge's testing environment
     // This difference occurs because:

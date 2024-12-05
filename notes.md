@@ -1696,7 +1696,7 @@ contract HelperConfig is CodeConstants, Script {
 
 You can write a script to interact with your deployed contract. This way, if you want to repeatedly call a function or interact with your contract for any reason, a script is a great way to do so as it makes these interactions reproducible. These interaction scripts should be saved in the script/Interactions folder!
 
-A great package to use is `Cyfrin Foundry DevOps` as it grabs your latest version of a deployed contract to interact with. Install it with `forge install Cyfrin/foundry-devops --no-commit`.
+A great package to use is `Cyfrin Foundry DevOps` as it grabs your latest version of a deployed contract to interact with. Install it with `forge install Cyfrin/foundry-devops --no-commit`. (this Cyfrin Foundry Devops tool can be found here: `https://github.com/Cyfrin/foundry-devops`)
 
 when using cyfrin foundry devops, make sure to Update your `foundry.toml` to have read permissions on the broadcast folder (copy and paste the following into your `foundry.toml`):
 ```js
@@ -3316,11 +3316,11 @@ You can learn more about NFTs and their contracts @ `https://eips.ethereum.org/E
 
 When creating the NFT, you must store the image somewhere on the internet and have your contract point to it. There are different places to store the image, and the most popular ways are IPFS, https://IPFS, and directly on chain. Let's take a look at the pros and cons of each one of these:
 
-IPFS (Interplanetary File System): IPFS is a series of nodes that can store data. You can upload your image here, however someone would need to pin it constantly and not have their laptop/node turned off in order to keep the image visible. Rating: Medium Recommended
+`IPFS` (Interplanetary File System): IPFS is a series of nodes that can store data. You can upload your image here, however someone would need to pin it constantly and not have their laptop/node turned off in order to keep the image visible. If you choose to use this, then you can use services like `Pinata.cloud` that will pin your images for you, this way you know at least one other person in pinning your images on IPFS. Rating: Medium Recommended
 
-Https://IPFS: This is the centralized browser/website version of IPFS, if this website goes down, so does the image of your NFT. Rating: NOT RECCOMENDED!
+`Https://IPFS`: This is the centralized browser/website version of IPFS, if this website goes down, so does the image of your NFT. Rating: NOT RECCOMENDED!
 
-On-Chain: You can store your image directly on chain and this way the only way the image can go down is if the whole blockchain goes down! Great! However images are much more expensive to store on the blockchain than any other data. Rating: BEST (if affordable)
+`On-Chain`: You can store your image directly on chain as an SVG and this way the only way the image can go down is if the whole blockchain goes down (which is almost impossible)! Great! However images are much more expensive to store on the blockchain than any other data. Rating: BEST (if affordable)
 
 #### Creating NFTs on IPFS
 
