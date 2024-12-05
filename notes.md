@@ -43,12 +43,13 @@ Smart Contract Tests Notes
 
 Chisel Notes
 
-Deploying on Anvil Notes
+Deploying on Anvil Without A Script Notes
 
 Script Notes
     - Getting Started with Scripts Notes
     - HelperConfig Script Notes
     - Deploying A Script Notes
+    - Deploying on Anvil Notes
     - Deploying to a Testnet
     - Interaction Script Notes
 
@@ -937,6 +938,8 @@ fs_permissions = [
 ]
 ```
 
+when deploying or interacting with contracts, if you get an error of `-ffi` then you must input `ffi = true` in your `foundry.toml`. However, make sure to turn this off when you are done as this command is dangerous and allows the host of the library to execute commands on your machine.
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Package Installing Notes:
@@ -1818,6 +1821,8 @@ if you have multiple contracts in a file and only want to send one, you can send
 example: 
 ` forge script script/DeployBasicNft.s.sol:DeployBasicNft --rpc-url http://127.0.0.1:8545 --account testing --sender 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --broadcast `
 
+when deploying or interacting with contracts, if you get an error of `-ffi` then you must input `ffi = true` in your `foundry.toml`. However, make sure to turn this off when you are done as this command is dangerous and allows the host of the library to execute commands on your machine.
+
 *** HOWEVER WHEN DEPLOYING TO A REAL BLOCKCHAIN, YOU NEVER WANT TO HAVE YOUR PRIVATE KEY IN PLAIN TEXT ***
 
 *** ALWAYS USE A FAKE PRIVATE KEY FROM ANVIL OR A BURNER ACCOUNT FOR TESTING ***
@@ -1827,7 +1832,7 @@ example:
 
 
 
-### Deploying to Anvil Notes (Local Foundry Blockchain)
+### Deploying on Anvil Notes (Local Foundry Blockchain)
 You always want to deploy a contract through a deployment script. 
 
 Steps:
@@ -1847,7 +1852,7 @@ forge script script/DeployBasicNft.s.sol:DeployBasicNft --rpc-url http://127.0.0
 ```
 
 
-
+when deploying or interacting with contracts, if you get an error of `-ffi` then you must input `ffi = true` in your `foundry.toml`. However, make sure to turn this off when you are done as this command is dangerous and allows the host of the library to execute commands on your machine.
 
 
 ### Deploying to a Testnet Notes
@@ -1905,7 +1910,7 @@ And to verify the contract when deploying, run `--verify --etherscan-api-key $ET
 forge script script/DeployBasicNft.s.sol:DeployBasicNft --rpc-url $SEPOLIA_RPC_URL --account SepoliaBurner --sender 0xBe3dDdB70EA16cBfd0cE0A4028902678EECDBe6D --broadcast --verify --etherscan-api-key $ETHERSCAN_API_KEY -vvvv
 ```
 
-
+when deploying or interacting with contracts, if you get an error of `-ffi` then you must input `ffi = true` in your `foundry.toml`. However, make sure to turn this off when you are done as this command is dangerous and allows the host of the library to execute commands on your machine.
 
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -3322,6 +3327,11 @@ When creating the NFT, you must store the image somewhere on the internet and ha
 
 `On-Chain`: You can store your image directly on chain as an SVG and this way the only way the image can go down is if the whole blockchain goes down (which is almost impossible)! Great! However images are much more expensive to store on the blockchain than any other data. Rating: BEST (if affordable)
 
+Note: 
+TokenURI is the metadata of the NFT
+
+ImageURI is the link of the image, and is inside of the metadata in the TokenURI.
+
 #### Creating NFTs on IPFS
 
 Note: Steps will be numbered and info will be sprinkled in between steps for your convenience.
@@ -3392,6 +3402,41 @@ example:
 ```
 5. Then we are going to create a new folder named `img`, and move the image of the NFT that we want into this folder.
 
+
+#### Creating NFTs on-Chain
+
+To create NFTs on chain, we must first turn the image into an SVG. To turn the image into an SVG, we can use AI.
+
+Once we have the SVG, we need to get the URL so our browsers can read it. We can do this by:
+
+1. Have our SVG in our NFT root directory in a folder named `img`. 
+2. cd into the `img` folder.
+3. run `base64` (not all computers have this, so you can run `base64 --help` to check if you do)
+4. run `base64 -i <img-file-name>`. This will base64 encode the entire SVG.
+example: 
+command: `base64 -i <example.svg>`
+Output: 
+PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIHhtbG5z
+PSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAw
+IiBmaWxsPSJ5ZWxsb3ciIHI9Ijc4IiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjMiIC8+
+CiAgPGcgY2xhc3M9ImV5ZXMiPgogICAgPGNpcmNsZSBjeD0iNDUiIGN5PSIxMDAiIHI9IjEyIiAv
+PgogICAgPGNpcmNsZSBjeD0iMTU0IiBjeT0iMTAwIiByPSIxMiIgLz4KICA8L2c+CiAgPHBhdGgg
+ZD0ibTEzNi44MSAxMTYuNTNjLjY5IDI2LjE3LTY0LjExIDQyLTgxLjUyLS43MyIgc3R5bGU9ImZp
+bGw6bm9uZTsgc3Ryb2tlOiBibGFjazsgc3Ryb2tlLXdpZHRoOiAzOyIgLz4KPC9zdmc+
+
+5. Copy and paste the output of the base64 encoding into a README.md file to edit it
+6. Right before the encoded output, we add a beginning piece to tell our browser that this is an SVG. Add ` data:image/svg+xml;base64, ` before the encoded output.
+
+data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIHhtbG5z
+PSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAw
+IiBmaWxsPSJ5ZWxsb3ciIHI9Ijc4IiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjMiIC8+
+CiAgPGcgY2xhc3M9ImV5ZXMiPgogICAgPGNpcmNsZSBjeD0iNDUiIGN5PSIxMDAiIHI9IjEyIiAv
+PgogICAgPGNpcmNsZSBjeD0iMTU0IiBjeT0iMTAwIiByPSIxMiIgLz4KICA8L2c+CiAgPHBhdGgg
+ZD0ibTEzNi44MSAxMTYuNTNjLjY5IDI2LjE3LTY0LjExIDQyLTgxLjUyLS43MyIgc3R5bGU9ImZp
+bGw6bm9uZTsgc3Ryb2tlOiBibGFjazsgc3Ryb2tlLXdpZHRoOiAzOyIgLz4KPC9zdmc+
+
+7. If you copy this whole code and input it into an browser, the browser will show the SVG.
+8. Now we can take this SVG and put it on-chain!
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
