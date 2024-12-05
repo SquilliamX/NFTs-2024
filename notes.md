@@ -1,4 +1,97 @@
 # Notes 
+
+## Glossary
+
+Search for the Department Names with `ctrl + F`:
+
+Getting Started Notes
+    - Layout of Solidity Files/Contracts
+    - CEI (Checks, Effects, Interactions) Notes
+    - Modifier Notes:
+    - Visibility Modifier Notes 
+    - Variable Notes
+        - Constant Notes
+        - Immutable Notes
+        - Storage Variable Notes
+        - Saving Gas with Storage Variable Notes
+        - Custom Error Variable Notes
+        - Reference Types Variable Notes
+            - Array Notes
+            - Struct Notes
+            - Mapping Notes
+    - Constructor Notes
+    - Event Notes
+    - Enum Notes
+    - Inheritance Notes
+    - Inheriting Constructor Notes
+    - Override Notes
+    - Modulo Notes
+    - Sending Money in Solidity Notes
+    - Console.log Notes
+    - Remappings in foundry.toml Notes
+
+Package Installing Notes
+
+Smart Contract Tests Notes
+    - Local Chain Tests Don't Work on Forked Chain Tests?
+    - Testing Events
+    - Tests with Custom error notes
+    - Sending money in tests Notes
+    - GAS INFO IN TESTS Notes
+    - FUZZ TESTING NOTES
+    - CHEATCODES FOR TESTS Notes
+
+Chisel Notes
+
+Deploying on Anvil Notes
+
+Script Notes
+    - Getting Started with Scripts Notes
+    - HelperConfig Script Notes
+    - Deploying A Script Notes
+    - Deploying to a Testnet
+    - Interaction Script Notes
+
+BroadCast Folder Notes
+
+.env Notes
+
+DEPLOYING PRODUCTION CONTRACT Notes
+    - Verifying a Deploying Contract Notes
+        - If a Deployed Contract does not Verify Correctly
+        - ALL --VERIFY OPTIONS NOTES
+
+How to interact with deployed contracts from the command line Notes
+    - CAST SIG NOTES
+
+TIPS AND TRICKS
+
+ChainLink Notes
+    - Chainlink Functions Notes
+    - Aggregator PriceFeeds Notes
+    - Chainlink VRF 2.5 Notes
+    - Chainlink Automation (Custom Logic) Notes
+
+Makefile Notes
+
+Everything ZK-SYNC Notes
+    - Zk-SYNC Foundry Notes
+    - Deploying on ZK-SYNC Notes
+        - Running a local zkSync test node using Docker, and deploying a smart contract to the test node.
+
+ERC20 Notes
+
+NFT Notes
+    - What are NFTs?
+    - Creating NFTs
+    - Creating NFTs on IPFS
+
+EIP Notes
+    - EIP status terms
+
+Keyboard Shortcuts
+
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ## Getting Started Notes
 
@@ -235,7 +328,7 @@ For example:
 Constant variables are directly embedded in the bytecode. This saves gas.
 `constant` is a state mutability modifier.
 
-#### Immutable Note
+#### Immutable Notes
 Variables that are declared at the contract level but initialized in the constructor can be listed as Immutable. This saves gas.
 For Example:
 ```javascript
@@ -827,6 +920,23 @@ function exampleLog() external {
 ```
 
 
+
+
+### Remappings in foundry.toml Notes
+Remappings tell foundry to replace the mapping for imports. 
+for example:
+```javascript
+ remappings = ["@chainlink/contracts/=lib/chainlink-brownie-contracts/contracts/"]  // in this example, we are telling foundry that everytime it sees @chainlink/contracts/ , it should point to lib/chainlink-brownie-contracts/ as this is where our packages that we just installed stays
+ ```
+
+when using cyfrin foundry devops, make sure to Update your `foundry.toml` to have read permissions on the broadcast folder (copy and paste the following into your `foundry.toml`):
+```js
+fs_permissions = [
+    { access = "read", path = "./broadcast" },
+    { access = "read", path = "./reports" },
+]
+```
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Package Installing Notes:
@@ -844,14 +954,6 @@ exmaple:
 `forge install smartcontractkit/chainlink-brownie-contracts@1.1.1 --no-commit` as it does the same thing)
 
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-## Remappings in foundry.toml Notes:
-Remappings tell foundry to replace the mapping for imports. 
-for example:
-```javascript
- remappings = ["@chainlink/contracts/=lib/chainlink-brownie-contracts/contracts/"]  // in this example, we are telling foundry that everytime it sees @chainlink/contracts/ , it should point to lib/chainlink-brownie-contracts/ as this is where our packages that we just installed stays
- ```
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1090,7 +1192,8 @@ contract Raffle is VRFConsumerBaseV2Plus {
 
 
 
- ### Sending money in tests Notes:
+ ### Sending money in tests Notes
+
  When writing a test in solidity and you want to pass money to the test, you write it like this:
  ```javascript
   function testFundUpdatesFundedDataStructure() public {
@@ -1099,8 +1202,16 @@ contract Raffle is VRFConsumerBaseV2Plus {
  ```
  because the fund function that we are calling does not take any parameter, it should be written like `fundMe.fund{value: 10e18}();` and not like ``fundMe.fund({value: 10e18});``. This is because the fund function does not take any parameters but is payable. So {value: 10e18} is the value being passed while () is the parameters being passed. IF the fund function was written like `function fund(uint256 value) public payable {}` then the test line of `fundMe.fund({value: 10e18}); ` would indeed work.
 
+
+
+
+
  ### GAS INFO IN TESTS Notes
+
  When working on tests in anvil, the gas price defaults to 0. So for us to simulate transactions in test with actual gas prices, we need to tell our tests to actually use real gas prices. This is where `vm.txGasPrice` comes in. (See `vm.txGasPrice` below in cheatcodes for tests)
+
+
+
 
  ### FUZZ TESTING NOTES
 
@@ -1266,21 +1377,25 @@ Type: uint256
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+## Deploying on Anvil Without A Script Notes
+
+You always want to deploy contracts through deployment scripts (SEE SCRIPT NOTES).
+
 *** NEVER USE A .ENV FOR PRODUCTION BUILDS, ONLY USE A .ENV FOR TESTING ***
 
 to deploy a Singular Contract while testing on anvil or a testnet:
 
 to deploy a smart contract to a chain, use the following command of:
 
-forge create <filename> --rpc-url http://<endpoint-url> --private-key <privatekey>.
+`forge create <filename> --rpc-url http://<endpoint-url> --account <account-Name> --sender <account-public-address> --broadcast `.
 
 you can get the endpoint url(PRC_URL)  from alchemy. when getting the url from alchemy, copy the https endpoint. then set up your .env like `.env`
 
 
 example:
-forge create SimpleStorage --rpc-url http://127.0.0.1:8545 --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80.
+`forge create SimpleStorage --rpc-url http://127.0.0.1:8545 --account testing --sender 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --broadcast`.
 
-in the exmaple above, we are deploying to anvil's blockchain with a fake private key from anvil. if you want to run anvil, just run the command "anvil" in your terminal.
+in the example above, we are deploying to anvil's blockchain with a fake private key from anvil. if you want to run anvil, just run the command "anvil" in your terminal.
 
 *** HOWEVER WHEN DEPLOYING TO A REAL BLOCKCHAIN, YOU NEVER WANT TO HAVE YOUR PRIVATE KEY IN PLAIN TEXT ***
 
@@ -1294,7 +1409,7 @@ in the exmaple above, we are deploying to anvil's blockchain with a fake private
 
 ### Getting Started with Scripts Notes
 
-When writing Scripts, you must import the script directory from foundry. and if you are using console.log, then you must import console.log as well.
+When writing Scripts, you must import the `script` directory from `foundry`. and if you are using `console.log`, then you must import `console.log` as well.
 For Example:
 ```javascript
 import {Script, console} from "forge-std/Script.sol";
@@ -1576,44 +1691,27 @@ contract HelperConfig is CodeConstants, Script {
 ```
 
 
-
-
-
-
-### Deploying A Script Notes
-If you have a script, you can run a simulation of deploying to a blockchain with the command in your terminal of `forge script script/<file-name> --rpc-url http://<endpoint-url>` 
-
-example:
-`forge script script/DeploySimpleStorage.s.sol --rpc-url http://127.0.0.1:8545`
-
-this will create a broadcast folder, and all deployments will be in your deployment folder in case you want to view any information about your deployment.
-
-to deploy to a testnet or anvil run the command of `forge script script/<file-name> --rpc-url http://<endpoint-url> --broadcast --private-key <private-key>`  
-
-example: 
-` forge script script/DeploySimpleStorage.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 `
-
-if you have multiple contracts in a file and only want to send one, you can send the one by running `forge script script/<file-name>:<contract-Name> --rpc-url http://<endpoint-url> --broadcast --private-key <private-key>`
-
-example: 
-` forge script script/Interactions.s.sol:FundFundMe --rpc-url http://127.0.0.1:8545 --broadcast --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 `
-
-*** HOWEVER WHEN DEPLOYING TO A REAL BLOCKCHAIN, YOU NEVER WANT TO HAVE YOUR PRIVATE KEY IN PLAIN TEXT ***
-
-*** ALWAYS USE A FAKE PRIVATE KEY FROM ANVIL OR A BURNER ACCOUNT FOR TESTING ***
-
-*** NEVER USE A .ENV FOR PRODUCTION BUILDS, ONLY USE A .ENV FOR TESTING ***
-
-
 ### Interaction Script Notes
 (its most likely easier to just use Cast Send to interact with deployed contracts.)
 
-You can write a script to interact with your deployed contract. This way, if you want to repeatedly call a function of interact with your contract for any reason, a script is a great way to do so as it makes these interactions reproducible. These interaction scripts should be saved in the script/Interactions folder!
+You can write a script to interact with your deployed contract. This way, if you want to repeatedly call a function or interact with your contract for any reason, a script is a great way to do so as it makes these interactions reproducible. These interaction scripts should be saved in the script/Interactions folder!
 
-A great package to use is `Cyfrin Foundry DevOps` as it grabs your latest version of a deployed contract to interact with. Install it with `forge install Cyfrin/Foundry-devops --no-commit`.
+A great package to use is `Cyfrin Foundry DevOps` as it grabs your latest version of a deployed contract to interact with. Install it with `forge install Cyfrin/foundry-devops --no-commit`.
+
+when using cyfrin foundry devops, make sure to Update your `foundry.toml` to have read permissions on the broadcast folder (copy and paste the following into your `foundry.toml`):
+```js
+fs_permissions = [
+    { access = "read", path = "./broadcast" },
+    { access = "read", path = "./reports" },
+]
+```
+
 This package has a function that allows you to grab your lastest version of a deployed contract.
 For Example:
 ```javascript
+import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
+
+
 // this is going to be our script for funding the fundMe contract
 contract FundFundMe is Script {
     // amount we are funding with
@@ -1642,10 +1740,177 @@ contract FundFundMe is Script {
 ```
 Always write tests for scripts as getting them wrong and deploying them is a waste of money. Save the money and write the tests! But its most likely easier to just use Cast Send to interact with deployed contracts.
 
+Below is another example of running Interaction Scripts:
+
+First we ran the following command to deploy our NFT.
+```bash
+forge script script/DeployBasicNft.s.sol:DeployBasicNft --rpc-url http://127.0.0.1:8545 --account testing --sender 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --broadcast 
+```
+
+Then we ran the following command to mint the first NFT in our contract through an Interactions.s.sol script:
+```bash
+ forge script script/Interactions.s.sol:MintBasicNft --rpc-url http://127.0.0.1:8545 --account testing --sender 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --broadcast
+```
+
+Below is the example Interactions.s.sol script we executed (from foundry-nft-f23):
+```js
+// Specifies the license for this contract
+// SPDX-License-Identifier: MIT
+
+// Declares the Solidity version to be used
+pragma solidity 0.8.19;
+
+// Import necessary contracts and libraries
+import {Script} from "forge-std/Script.sol";
+import {BasicNft} from "../src/BasicNFT.sol";
+// DevOpsTools helps us interact with already deployed contracts
+import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
+
+// Contract for minting NFTs on an already deployed BasicNft contract
+contract MintBasicNft is Script {
+    // Define a constant IPFS URI for the PUG NFT metadata
+    // This URI points to a JSON file containing the NFT's metadata (image, attributes, etc.)
+    string public constant PUG =
+        "ipfs://bafybeig37ioir76s7mg5oobetncojcm3c3hxasyd4rvid4jqhy4gkaheg4/?filename=0-PUG.json";
+
+    // Main function that will be called to mint an NFT
+    function run() external {
+        // Get the address of the most recently deployed BasicNft contract on the current chain
+        // This allows us to interact with the contract without hardcoding addresses
+        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment("BasicNft", block.chainid);
+        // Call the function to mint an NFT on this contract
+        mintNftOnContract(mostRecentlyDeployed);
+    }
+
+    // Function that handles the actual minting process
+    function mintNftOnContract(address contractAddress) public {
+        // Start recording transactions for broadcasting to the network
+        vm.startBroadcast();
+        // Cast the address to our BasicNft contract type and call the mint function
+        // This creates a new NFT with the PUG metadata
+        BasicNft(contractAddress).mintNft(PUG);
+        // Stop recording transactions
+        vm.stopBroadcast();
+    }
+}
+
+```
+
+
+
+### Deploying A Script Notes
+If you have a script, you can run a simulation of deploying to a blockchain with the command in your terminal of `forge script script/<file-name> --rpc-url http://<endpoint-url>` 
+
+example:
+```bash
+forge script script/DeploySimpleStorage.s.sol --rpc-url http://127.0.0.1:8545 # this will spin up a temporary anvil blockchain with a fake account for simulation purposes 
+```
+
+this will create a broadcast folder, and all deployments will be in your deployment folder in case you want to view any information about your deployment.
+
+to deploy to a testnet or anvil run the command of `forge script script/<file-name> --rpc-url http://<endpoint-url> --account <account-Name> --sender <account-public-address> --broadcast `   
+
+example: 
+` forge script script/DeploySimpleStorage.s.sol --rpc-url $RPC_URL --broadcast --account <account-Name> --sender <account-public-address> --broadcast `
+
+if you have multiple contracts in a file and only want to send one, you can send the one by running `forge script script/Interactions.s.sol:FundFundMe --rpc-url http://<endpoint-URL> --account <account-Name> --sender <account-public-address> --broadcast`
+
+example: 
+` forge script script/DeployBasicNft.s.sol:DeployBasicNft --rpc-url http://127.0.0.1:8545 --account testing --sender 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --broadcast `
+
+*** HOWEVER WHEN DEPLOYING TO A REAL BLOCKCHAIN, YOU NEVER WANT TO HAVE YOUR PRIVATE KEY IN PLAIN TEXT ***
+
+*** ALWAYS USE A FAKE PRIVATE KEY FROM ANVIL OR A BURNER ACCOUNT FOR TESTING ***
+
+*** NEVER USE A .ENV FOR PRODUCTION BUILDS, ONLY USE A .ENV FOR TESTING ***
+
+
+
+
+### Deploying to Anvil Notes (Local Foundry Blockchain)
+You always want to deploy a contract through a deployment script. 
+
+Steps:
+
+1. run `anvil`
+2. create a new terminal.
+3. cd into the correct folder in the new terminal.
+
+run the following format to deploy the deployment script:
+```bash
+forge script script/Interactions.s.sol:FundFundMe --rpc-url http://<endpoint-URL> --account <account-Name> --sender <account-public-address> --broadcast
+```
+
+example:
+```bash
+forge script script/DeployBasicNft.s.sol:DeployBasicNft --rpc-url http://127.0.0.1:8545 --account testing --sender 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --broadcast
+```
+
+
+
+
+
+### Deploying to a Testnet Notes
+
+You always want to deploy a contract through a deployment script. 
+Deployment script example:
+```js
+// SPDX-License-Identifier: MIT
+
+pragma solidity 0.8.19;
+
+// Import the Forge scripting utilities and our NFT contract
+import {Script} from "forge-std/Script.sol";
+import {BasicNft} from "../src/BasicNFT.sol";
+
+// Contract for deploying our BasicNft, inheriting from Forge's Script contract
+contract DeployBasicNft is Script {
+    // Main function that will be called to deploy the contract
+    // When deployed to a real network, msg.sender will be the wallet address that runs this script
+    // In tests, msg.sender is a test address provided by Forge's testing environment
+    // This difference occurs because:
+    // 1. Real deployments: vm.startBroadcast() uses the private key from your wallet or environment
+    // 2. Tests: Forge's VM creates a test address and uses that as msg.sender
+    function run() external returns (BasicNft) {
+        // Start recording transactions for broadcasting to the network
+        vm.startBroadcast();
+        // Create a new instance of our BasicNft contract
+        // This will initialize it with "Dogie" name and "Dog" symbols
+        BasicNft basicNft = new BasicNft();
+        // Stop recording transactions
+        vm.stopBroadcast();
+        // Return the deployed contract instance
+        return basicNft;
+    }
+}
+```
+
+Then you will need to update your `.env` with your RPC_URL for the tesnet you want to deploy to. You can get this RPC_URL from alchemy. The link you are looking for on Alchemy will be the https link on the testnet of the chain you want to deploy on.
+example `.env`:
+```js
+SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/abc123
+```
+Then run `source .env` to add the environment varibles you just defined in `.env` to your project
+
+Then run the following command format to deploy your deployment script to the testnet:
+```bash
+forge script script/<file-Name>:<contract-Name> --rpc-url $RPC_URL_LINK --account <account-Name> --sender <account-public-address> --broadcast
+```
+example:
+```bash
+forge script script/DeployBasicNft.s.sol:DeployBasicNft --rpc-url $SEPOLIA_RPC_URL --account SepoliaBurner --sender 0xBe3dDdB70EA16cBfd0cE0A4028902678EECDBe6D --broadcast
+```
+And to verify the contract when deploying, run `--verify --etherscan-api-key $ETHERSCAN_API_KEY -vvvv`. Make sure to have the `$ETHERSCAN_API_KEY` in your `.env` file.
+```bash
+forge script script/DeployBasicNft.s.sol:DeployBasicNft --rpc-url $SEPOLIA_RPC_URL --account SepoliaBurner --sender 0xBe3dDdB70EA16cBfd0cE0A4028902678EECDBe6D --broadcast --verify --etherscan-api-key $ETHERSCAN_API_KEY -vvvv
+```
+
+
+
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-## BroadCast Folder Notes:
+## BroadCast Folder Notes
 
 the `dry-run` folder is where the transactions with no blockchain specified go.
 
@@ -1686,21 +1951,31 @@ Nonce Main purpose:
 Prevent transaction replay attacks (same transaction being executed multiple times)
 Ensure transactions are processed in the correct order
 Track the number of transactions sent by an account
+
+If you ever forget the contract address of a contract you just deployed, you can find it heree in the `broadcast` folder
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+## .env Notes
 
 
 *** NEVER USE A .ENV FOR PRODUCTION BUILDS, ONLY USE A .ENV FOR TESTING ***
 
 when using a .env, after adding the variables into the .env, run `source .env` in your terminal to added the environment variables.
 
-then run `echo $<variable>` to check it it was added properly. example: `echo $PRIVATE_KEY` or `echo $RPC_URL`. 
+then run `echo $<variable>` to check it it was added properly. example: `echo $RPC_URL`. 
 
-this way, when testing, instead of typing our rpc-url and private key into the terminal each time, we can instead run ` forge script script/<file-Name> --rpc-url $RPC_URL --broadcast --private-key $PRIVATE_KEY ` 
+this way, when testing, instead of typing our rpc-url and private key into the terminal each time, we can instead run ` forge script script/<file-Name> --rpc-url $RPC_URL --account <account-Name> --sender <account-public-address> --broadcast` .
+
+example: `forge script script/DeployBasicNft.s.sol:DeployBasicNft --rpc-url http://127.0.0.1:8545 --account testing --sender 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --broadcast`
+
+You never want to have your private key in plain text. Please do not use 
+
+*** NEVER USE A .ENV FOR PRODUCTION BUILDS, ONLY USE A .ENV FOR TESTING ***
+
 
 
 example:
-` forge script script/DeploySimpleStorage.s.sol --rpc-url $RPC_URL --broadcast --private-key $PRIVATE_KEY ` 
+` forge script script/DeploySimpleStorage.s.sol --rpc-url $RPC_URL --broadcast --account <account-Name> --sender <account-public-address>  ` 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1724,13 +1999,15 @@ After you deploy with this command, it will prompt you for your password. Do not
 
 you can of course add a RPC_URL to your .env and run `forge script <script> --rpc-url $RPC_URL --account <account_name> --sender <address> --broadcast` as well. NEVER PUT YOUR PRIVATE KEY IN YOUR .env !!
 
+example: `forge script script/DeployBasicNft.s.sol:DeployBasicNft --rpc-url http://127.0.0.1:8545 --account testing --sender 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --broadcast`
+
 you can run `cast wallet list` and it will show you all a list of the names you choose for the wallets you have encrpted.
 
 after encrypting your private key clear your terminal's history with `history -c`
 
 After deploying a contract copy the hash and input it into its blockchain's etherscan, then click on the "to" as this will be the contract. (The hash created is the hash of the transaction and the "to" is the contract itself.)
 
-### Verifying a Deploying Contract Notes:
+### Verifying a Deploying Contract Notes
 
 Manually (Not Recommended):
 1. When on the contract on etherscan, click the "Verify and Publish" button in the "Contract" tab of the contract on etherscan. This will take you to a different page on etherscan.
@@ -1782,7 +2059,7 @@ To see all the options of verifying a contract with forge, run `forge verify-con
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-## How to interact with deployed contracts from the command line Notes:
+## How to interact with deployed contracts from the command line Notes
 
 After you deploy a contract, you can interact with it:
 
@@ -1876,9 +2153,9 @@ For example:
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-## ChainLink Notes:
+## ChainLink Notes
 
-### Chainlink Functions
+### Chainlink Functions Notes
 Chainlink functions allow you to make any API call in a decentralized context through decentralized nodes. Chainlink functions will be the future of DeFi and smart contracts. If you want to make something novel and something that has never been done before, you should check out chainlink functions. You can learn more about chainlink functions at `docs.chain.link/chainlink-functions`.
 
 ### Aggregator PriceFeeds Notes
@@ -2812,7 +3089,7 @@ In this example, `checkUpkeep` checking to see if all the conditionals return tr
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-## MAKEFILE Notes
+## Makefile Notes
 
 A makefile is a way to create your own shortcuts. terminal commands in solidity can be very long, so you can essentially route your own shortcuts for terminal commands. Also, the `Makefile` needs to be `Makefile` and not `MakeFile` (the `f` needs to be lowercase) or `make` commands will not work.
 
@@ -2863,15 +3140,19 @@ ifeq ($(findstring --network sepolia,$(ARGS)),--network sepolia)
 	NETWORK_ARGS := --rpc-url $(SEPOLIA_RPC_URL) --private-key $(PRIVATE_KEY) --broadcast --verify --etherscan-api-key $(ETHERSCAN_API_KEY) -vvvv
 endif
 
+# to run, an example would be ` make deploy ARGS="--network sepolia" `
 deploy:
 	@forge script script/DeployRaffle.s.sol:DeployRaffle $(NETWORK_ARGS)
 
+# to run, an example would be ` make createSubscription ARGS="--network sepolia" `
 createSubscription:
 	@forge script script/Interactions.s.sol:CreateSubscription $(NETWORK_ARGS)
 
+# to run, an example would be ` make addConsumer ARGS="--network sepolia" `
 addConsumer:
 	@forge script script/Interactions.s.sol:AddConsumer $(NETWORK_ARGS)
 
+# to run, an example would be ` make fundSubscription ARGS="--network sepolia" `
 fundSubscription:
 	@forge script script/Interactions.s.sol:FundSubscription $(NETWORK_ARGS)
 
@@ -3033,6 +3314,14 @@ You can learn more about NFTs and their contracts @ `https://eips.ethereum.org/E
 
 ### Creating NFTs
 
+When creating the NFT, you must store the image somewhere on the internet and have your contract point to it. There are different places to store the image, and the most popular ways are IPFS, https://IPFS, and directly on chain. Let's take a look at the pros and cons of each one of these:
+
+IPFS (Interplanetary File System): IPFS is a series of nodes that can store data. You can upload your image here, however someone would need to pin it constantly and not have their laptop/node turned off in order to keep the image visible. Rating: Medium Recommended
+
+Https://IPFS: This is the centralized browser/website version of IPFS, if this website goes down, so does the image of your NFT. Rating: NOT RECCOMENDED!
+
+On-Chain: You can store your image directly on chain and this way the only way the image can go down is if the whole blockchain goes down! Great! However images are much more expensive to store on the blockchain than any other data. Rating: BEST (if affordable)
+
 #### Creating NFTs on IPFS
 
 Note: Steps will be numbered and info will be sprinkled in between steps for your convenience.
@@ -3144,7 +3433,7 @@ EIPs are a way for the community to suggest improvements to industry standards.
 
 
 
-## Keyboard Shortcuts:
+## Keyboard Shortcuts
 
 `ctrl` + `a` = select everything
 `ctrl` + `b` = open left side bar
