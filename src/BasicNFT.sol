@@ -11,6 +11,7 @@ contract BasicNft is ERC721 {
     // maps the NFT token ID to its URI (UniForm Resource Indicator)
     mapping(uint256 => string) private s_tokenIdToUri;
 
+    // the OpenZeppellin ERC721 contract has a constructor that takes a `string memory name_, string memory symbol_`
     constructor() ERC721("Dogie", "Dog") {
         // when this contract is launched it will start at 0
         s_tokenCounter = 0; // whenever we mint a new dog we will update the token counter.
