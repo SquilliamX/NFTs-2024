@@ -47,6 +47,7 @@ Deploying on Anvil Without A Script Notes
 
 Script Notes
     - Getting Started with Scripts Notes
+    - Script Cheatcodes 
     - HelperConfig Script Notes
     - Deploying A Script Notes
     - Deploying on Anvil Notes
@@ -1496,6 +1497,10 @@ contract DeployRaffle is Script {
 
 ```
 
+
+
+#### Script Cheatcodes 
+
 `vm.startBroadcast` & `vm.stopBroadcast`: All logic inbetween these two cheatcodes will be broadcasted/executed directly onto the blockchain. Broadcast is just a tool that allows msg.sender to become the owner of the contract. So you would be the owner, not the deployment script. And when using deployment scripts that use `broadcast` in tests, the test contract would become the msg.sender. 
 example: (from `foundry-smart-contract-lottery/script/DeployRaffle.s.sol`)
 ```js
@@ -1581,6 +1586,12 @@ example: from `foundry-smart-contract-lottery-f23`
         );
         vm.stopBroadcast();
 ```
+
+`vm.readFile`: in order to use this cheatcode, you need to activate fs_permissions in your `foundry.toml`:
+```js
+fs_permissions = [{ access = "read", path = "./img/" /* img should be replaced with the folder that you want to readFiles from. In this example i want to use readFile on my `img` folder */ }]
+```
+
 
 ### HelperConfig Script Notes
 
@@ -2153,6 +2164,23 @@ For example:
         require(callSuccess, "Call Failed");
     }
 ```
+
+If you want to quickly compile or console.log a contract to see if something works, you can run `forge script script/<file-Name>`.
+exmaple (from foundry-nft-f23):
+```js
+contract DeployMoodNft is Script {
+    function run() external returns (MoodNft) {
+        string memory sadSvg = vm.readFile("./img/sad.svg");
+        string memory happySvg = vm.readFile("./img/happy.svg");
+        console.log(sadSvg);
+    }
+```
+In this example i wanted to make sure vm.readFile was working correctly so i just compiled the contract onto anvil with `forge script script/<file-Name>` (since this will just spin up a fake anvil blockchain).
+
+
+How to make all the text be on one line? 
+Open the command pallete with `ctrl + shift + p ` and search for `join lines`. If word wrap is still on then search for `view toggle word wrap` or `toggle word wrap`
+
 
 
 
@@ -3403,12 +3431,13 @@ example:
 5. Then we are going to create a new folder named `img`, and move the image of the NFT that we want into this folder.
 
 
-#### Creating NFTs on-Chain
+#### How Creating NFTs on-Chain Works
 
 To create NFTs on chain, we must first turn the image into an SVG. To turn the image into an SVG, we can use AI.
 
 Once we have the SVG, we need to get the URL so our browsers can read it. We can do this by:
 
+The following is how it works. However we do not want to use `base64` manually. We want to use it programmatically. Read the following instructions to Create NFTs on chain.
 1. Have our SVG in our NFT root directory in a folder named `img`. 
 2. cd into the `img` folder.
 3. run `base64` (not all computers have this, so you can run `base64 --help` to check if you do)
@@ -3436,8 +3465,154 @@ ZD0ibTEzNi44MSAxMTYuNTNjLjY5IDI2LjE3LTY0LjExIDQyLTgxLjUyLS43MyIgc3R5bGU9ImZp
 bGw6bm9uZTsgc3Ryb2tlOiBibGFjazsgc3Ryb2tlLXdpZHRoOiAzOyIgLz4KPC9zdmc+
 
 7. If you copy this whole code and input it into an browser, the browser will show the SVG.
-8. Now we can take this SVG and put it on-chain!
+8. Now we can take this SVG and put it on-chain! 
 
+
+
+#### How to Create NFTs on-Chain
+
+To do so, we need to input the Image URI (which is the svg we just made) into the encoding of the token URI (NFT metadata). We can do so by doing to following:
+example (from Foundry-nft-f23):
+```js
+// SPDX-License-Identifier: MIT
+
+pragma solidity 0.8.19;
+
+// Imports the ERC721 contract from OpenZeppelin library for NFT functionality
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+// We need ERC721 as the base contract for NFT functionality
+import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
+// Base64 is needed to encode our NFT metadata on-chain
+
+// Creates a new contract called MoodNft that inherits from ERC721
+contract MoodNft is ERC721 {
+    error MoodNft__CantFlipMoodIfNotOwner();
+
+    // we declare this variable but do not initialize it because its value is going to keep changing
+    // Counter to keep track of the number of NFTs minted
+    // Private variable with storage prefix (s_) for better gas optimization
+    uint256 private s_tokenCounter;
+
+    // Stores the SVG data for the sad mood NFT
+    // Private variable with storage prefix (s_)
+    string private s_sadSvgImageUri;
+
+    // Stores the SVG data for the happy mood NFT
+    // Private variable with storage prefix (s_)
+    string private s_happySvgImageUri;
+
+    enum Mood {
+        HAPPY,
+        SAD
+    }
+
+    // Map token IDs to their current mood
+    // This allows each NFT to have its own mood state
+    mapping(uint256 => Mood) private s_tokenIdToMood;
+
+    // when this contract is deployed, it will take the URI of the two NFTs
+    // Constructor function that initializes the contract
+    // Takes two parameters: SVG data for sad and happy moods
+    // Calls the parent ERC721 constructor with name "Mood NFT" and symbol "MN"
+    constructor(string memory sadSvg, string memory happySvg) ERC721("Mood NFT", "MN") {
+        // Start counter at 0 for first token ID
+        s_tokenCounter = 0;
+        // Store SVGs that are passed in deployment in contract storage for permanent access
+        s_sadSvgImageUri = sadSvg;
+        s_happySvgImageUri = happySvg;
+    }
+
+    // ...(skipped code)
+
+
+    // Override base URI to return base64 data URI prefix (parent contract: OpenZeppelin's ERC721)
+    // This is needed for on-chain SVG storage
+    function _baseURI() internal pure override returns (string memory) {
+        return "data:application/json;base64,";
+    }
+
+    // Generate and return the token URI containing metadata and SVG
+    // This function must be public and override the parent contract (OpenZeppelin's ERC721)
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        // Select appropriate SVG based on token's current mood
+        string memory imageURI;
+        if (s_tokenIdToMood[tokenId] == Mood.HAPPY) {
+            imageURI = s_happySvgImageUri;
+        } else {
+            imageURI = s_sadSvgImageUri;
+        }
+
+        // Construct and encode the complete metadata JSON
+        // We use abi.encodePacked for efficient string concatenation
+        // returning/typecasting the following encoded data as a string so it can be on chain as a string  
+        return string(
+            // encoding the following data so it can go on chain
+            abi.encodePacked(
+                // returning `data:application/json;base64,` infront of the following encoded data so our browser can decode it
+                _baseURI(),
+                // base64 encoding the following bytes
+                Base64.encode(
+                    // typecasting the following encoded data into bytes
+                    bytes(
+                        // encoding the metadata with the Name of the NFT, description, attributes, and ImageURI inside of it.
+                        abi.encodePacked(
+                            '{"name": "',
+                            name(), // Get name from ERC721 parameter that we passed
+                            '", "description": "An NFT that reflects the owners mood.", "attributes": [{"trait_type": "moodiness", "value": 100}], "image": "',
+                            imageURI,
+                            '"}'
+                        )
+                    )
+                )
+            )
+        );
+    }
+}
+```
+In this example, we import the Open Zeppelin contract and the base64 contract. The openZeppelin contract is for the ERC721 contract inheritance, and the base64 contract is to encode the metadata so it can be on chain!
+
+In this example, inside of the tokenURI function, there are many comments explaining what it does. this token URI is the metadata of the NFTs and it is encoded properly reside on-chain.
+
+However, we do not want to have to get the base64 encoding of the ImageUrl manually everytime, we want to get it programatically.
+
+To do this we must create a script that reads from our SVG images file, encodes the SVGs, and adds the baseURL to the encoded text.
+example (from foundry-nft-f23):
+```js
+// SPDX-License-Identifier: MIT
+
+// Declares the Solidity version to be used
+pragma solidity 0.8.19;
+
+// Import the Forge scripting utilities and our NFT contract
+import {Script, console} from "forge-std/Script.sol";
+import {MoodNft} from "../src/MoodNFT.sol";
+import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
+
+contract DeployMoodNft is Script {
+    function run() external returns (MoodNft) {
+        string memory sadSvg = vm.readFile("./img/sad.svg");
+        string memory happySvg = vm.readFile("./img/happy.svg");
+
+        vm.startBroadcast();
+        MoodNft moodNft = new MoodNft(svgToImageURI(sadSvg), svgToImageURI(happySvg));
+        vm.stopBroadcast();
+    }
+
+    function svgToImageURI(string memory svg) public pure returns (string memory) {
+        string memory baseUrl = "data:image/svg+xml;base64,";
+        string memory svgBase64Encoded = Base64.encode(bytes(string(abi.encodePacked(svg))));
+        return string(abi.encodePacked(baseUrl, svgBase64Encoded));
+    }
+}
+
+```
+
+In this example, we are using the cheatcode `vm.readFile` that foundry has to read from our images folder. To use this cheatcode, we must update our foundry.toml with:
+```js
+fs_permissions = [{ access = "read", path = "./img/" /* img should be replaced with the folder that you want to readFiles from. In this example i want to use readFile on my `img` folder */ }]
+```
+
+Then in this example, after we read/save the SVG files, we write the function `svgToImageURI` that adds the baseURL (so our browser can decode the base64 encoded text) to the encoded text after it encodes it. then it passes these BaseURL+encoded-strings to the constructor of the main NFT contract.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## EIP Notes 
