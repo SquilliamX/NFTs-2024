@@ -10,6 +10,8 @@ import {Base64} from "@openzeppelin/contracts/utils/Base64.sol";
 
 // Creates a new contract called MoodNft that inherits from ERC721
 contract MoodNft is ERC721 {
+    error MoodNft__CantFlipMoodIfNotOwner();
+
     // we declare this variable but do not initialize it because its value is going to keep changing
     // Counter to keep track of the number of NFTs minted
     // Private variable with storage prefix (s_) for better gas optimization
@@ -55,7 +57,25 @@ contract MoodNft is ERC721 {
         s_tokenCounter++;
     }
 
-    // Override base URI to return base64 data URI prefix
+    // Allows NFT owners to toggle their NFT's mood between HAPPY and SAD
+    // This adds interactivity to the NFT and makes it more engaging
+    function flipMood(uint256 tokenId) public {
+        // Check if caller is owner or approved to manage this token
+        // We must verify ownership to prevent unauthorized mood changes
+        if (!_isApprovedOrOwner(msg.sender, tokenId)) {
+            revert MoodNft__CantFlipMoodIfNotOwner();
+        }
+
+        // Toggle the mood - if happy make sad, if sad make happy
+        // Using if/else for clarity and to handle both states explicitly
+        if (s_tokenIdToMood[tokenId] == Mood.HAPPY) {
+            s_tokenIdToMood[tokenId] = Mood.SAD;
+        } else {
+            s_tokenIdToMood[tokenId] = Mood.HAPPY;
+        }
+    }
+
+    // Override base URI to return base64 data URI prefix (parent contract: OpenZeppelin's ERC721)
     // This is needed for on-chain SVG storage
     function _baseURI() internal pure override returns (string memory) {
         return "data:application/json;base64,";
@@ -74,11 +94,17 @@ contract MoodNft is ERC721 {
 
         // Construct and encode the complete metadata JSON
         // We use abi.encodePacked for efficient string concatenation
+        // returning/typecasting the following encoded data as a string so it can be on chain as a string
         return string(
+            // encoding the following data so it can go on chain
             abi.encodePacked(
+                // returning `data:application/json;base64,` infront of the following encoded data so our browser can decode it
                 _baseURI(),
+                // base64 encoding the following bytes
                 Base64.encode(
+                    // typecasting the following encoded data into bytes
                     bytes(
+                        // encoding the metadata with the Name of the NFT, description, attributes, and ImageURI inside of it.
                         abi.encodePacked(
                             '{"name": "',
                             name(), // Get name from ERC721 parameter that we passed
@@ -92,6 +118,11 @@ contract MoodNft is ERC721 {
         );
     }
 
+    /* Getter Functions */
+
+    // Returns total number of NFTs minted
+    // External because it only needs to be called from outside the contract
+    // View because it doesn't modify state
     function getNftCount() external view returns (uint256) {
         return s_tokenCounter;
     }
