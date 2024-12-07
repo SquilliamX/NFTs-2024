@@ -43,7 +43,7 @@ contract MintMoodNft is Script {
     function run() external {
         // Get the address of the most recently deployed BasicNft contract on the current chain
         // This allows us to interact with the contract without hardcoding addresses
-        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment("DeployMoodNft", block.chainid);
+        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment("MoodNft", block.chainid);
         mintNftOnContract(mostRecentlyDeployed);
     }
 
@@ -63,7 +63,7 @@ contract FlipMood is Script {
     function run(uint256 _tokenId) external {
         // Get the address of the most recently deployed BasicNft contract on the current chain
         // This allows us to interact with the contract without hardcoding addresses
-        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment("DeployMoodNft", block.chainid);
+        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment("MoodNft", block.chainid);
         flipMoodOnContract(mostRecentlyDeployed, _tokenId);
     }
 
