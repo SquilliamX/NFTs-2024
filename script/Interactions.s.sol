@@ -8,6 +8,7 @@ import {Script} from "forge-std/Script.sol";
 import {BasicNft} from "../src/BasicNFT.sol";
 // DevOpsTools helps us interact with already deployed contracts
 import {DevOpsTools} from "lib/foundry-devops/src/DevOpsTools.sol";
+import {MoodNft} from "src/MoodNFT.sol";
 
 // Contract for minting NFTs on an already deployed BasicNft contract
 contract MintBasicNft is Script {
@@ -32,6 +33,46 @@ contract MintBasicNft is Script {
         // Cast the address to our BasicNft contract type and call the mint function
         // This creates a new NFT with the PUG metadata
         BasicNft(contractAddress).mintNft(PUG);
+        // Stop recording transactions
+        vm.stopBroadcast();
+    }
+}
+
+contract MintMoodNft is Script {
+    // Main function that will be called to mint an NFT
+    function run() external {
+        // Get the address of the most recently deployed BasicNft contract on the current chain
+        // This allows us to interact with the contract without hardcoding addresses
+        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment("DeployMoodNft", block.chainid);
+        mintNftOnContract(mostRecentlyDeployed);
+    }
+
+    // Function that handles the actual minting process
+    function mintNftOnContract(address contractAddress) public {
+        // Start recording transactions for broadcasting to the network
+        vm.startBroadcast();
+        // Cast the address to our MoodNft contract type and call the mint function
+        MoodNft(contractAddress).mintNft();
+        // Stop recording transactions
+        vm.stopBroadcast();
+    }
+}
+
+contract FlipMood is Script {
+    // Main function that will be called to mint an NFT
+    function run(uint256 _tokenId) external {
+        // Get the address of the most recently deployed BasicNft contract on the current chain
+        // This allows us to interact with the contract without hardcoding addresses
+        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment("DeployMoodNft", block.chainid);
+        flipMoodOnContract(mostRecentlyDeployed, _tokenId);
+    }
+
+    // Function that handles the actual flipping process
+    function flipMoodOnContract(address contractAddress, uint256 _tokenId) public {
+        // Start recording transactions for broadcasting to the network
+        vm.startBroadcast();
+        // Cast the address to our MoodNft contract type and call the flipMood function
+        MoodNft(contractAddress).flipMood(_tokenId);
         // Stop recording transactions
         vm.stopBroadcast();
     }
