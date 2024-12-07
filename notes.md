@@ -87,6 +87,8 @@ NFT Notes
     - What are NFTs?
     - Creating NFTs
     - Creating NFTs on IPFS
+    - How Creating NFTs on-Chain Works
+    - How to Create NFTs on-Chain
 
 EIP Notes
     - EIP status terms
@@ -1050,8 +1052,8 @@ you can use `-vv`, `-vvv`, `-vvvv`, `-vvvvv` after at the end of your `forge tes
 `-vvvv` = more detailed stack trace, console.logs and bytes.
 
 There are 4 different test types:
-1. Unit: Testing a specific part of our code
-2. Integration: Testing how our code works with other parts of our code
+1. Unit: Testing a specific part of our code: Example: Writing a test for our contract that does not get deployment from a deployment script
+2. Integration: Testing how our code works with other parts of our code: Example: Testing our main contract that is combined with a deployment script
 3. Forked: Testing our code on a simulated real environment
 4. Staging: Testing our code in a real environment that is not production (testnet or sometimes mainnet for testing)
 
