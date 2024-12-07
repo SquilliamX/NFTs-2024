@@ -36,6 +36,7 @@ Smart Contract Tests Notes
     - Local Chain Tests Don't Work on Forked Chain Tests?
     - Testing Events
     - Tests with Custom error notes
+    - How to compare strings in Tests
     - Sending money in tests Notes
     - GAS INFO IN TESTS Notes
     - FUZZ TESTING NOTES
@@ -1195,10 +1196,50 @@ contract Raffle is VRFConsumerBaseV2Plus {
 
 
 
+### How to compare strings in Tests
+
+To compare strings in foundry, we must abi.encode them. The following is an example from foundry-nft-f23:
+```js
+
+
+// SPDX-License-Identifier: MIT
+
+pragma solidity 0.8.19;
+
+import {Test, console} from "forge-std/Test.sol";
+import {MoodNft} from "src/MoodNFT.sol";
+
+
+contract MoodNftIntegrationTest is Test {
+string public constant SAD_SVG_URI =
+        "data:application/json;base64,eyJuYW1lIj";
+
+    // ... (skipped code)
+
+ function testFlipTokenToSad() public {
+        // Start a series of transactions from USER address
+        vm.startPrank(USER);
+
+        // Mint a new NFT
+        moodNft.mintNft();
+
+        // Flip the mood of token 0 from happy to sad
+        moodNft.flipMood(0);
+
+        // Log the token URI for verification
+        console.log(moodNft.tokenURI(0));
+
+        // Verify the token URI matches the expected SAD SVG URI
+        assertEq(keccak256(abi.encodePacked(moodNft.tokenURI(0))), keccak256(abi.encodePacked(SAD_SVG_URI)));
+    }
+}
+```
 
 
 
- ### Sending money in tests Notes
+
+
+### Sending money in tests Notes
 
  When writing a test in solidity and you want to pass money to the test, you write it like this:
  ```javascript
