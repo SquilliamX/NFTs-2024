@@ -22,6 +22,7 @@ Getting Started Notes
     - Constructor Notes
     - Event Notes
     - Enum Notes
+    - Call Notes
     - Inheritance Notes
     - Inheriting Constructor Notes
     - Override Notes
@@ -29,6 +30,8 @@ Getting Started Notes
     - Sending Money in Solidity Notes
     - Console.log Notes
     - Remappings in foundry.toml Notes
+    - abi.encode Notes & abi.encodePacked Notes
+    - How to use abi.encode and abi.decode Notes
 
 Package Installing Notes
 
@@ -738,6 +741,14 @@ In enums:
 
 
 
+### Call Notes
+
+In a function call, what is the difference between 'call' and 'staticcall'?
+
+'call' allows the function to modify the contract's state while 'staticcall' only reads data without changing the contract's state.
+
+
+
 
 ### Inheritance Notes
 
@@ -943,6 +954,186 @@ fs_permissions = [
 ```
 
 when deploying or interacting with contracts, if you get an error of `-ffi` then you must input `ffi = true` in your `foundry.toml`. However, make sure to turn this off when you are done as this command is dangerous and allows the host of the library to execute commands on your machine.
+
+
+
+
+### abi.encode Notes & abi.encodePacked Notes
+(If you need help, the following video will explain it: `https://updraft.cyfrin.io/courses/advanced-foundry/how-to-create-an-NFT-collection/evm-opcodes-advanced`)
+
+From a high level, `abi.encodePacked` can combine strings or nummbers or pretty much anything together.
+
+How does it do this? `abi.encode` can take any value or string and encode it into the evm's opcodes. By doing this, the evm can translate it from english string/numbers to an encoded opcode value.
+
+`abi.encode`: Will transform any value into the evm's bytecode/opcode value, but it will have many 0000s.
+
+`abi.encodePacked`: Will transform any value into the evm's bytecode/opcode value without the many 000s.
+
+`abi.decode`: Will take the bytecode/opcode that is encoded and transfrom it back into its original value.
+
+
+#### How to use abi.encode and abi.decode Notes
+
+`abi.encode` examples:
+```js
+ // In this function, we encode the number one to what it'll look like in binary
+    // Or put another way, we ABI encode it.
+    function encodeNumber() public pure returns (bytes memory) {
+        bytes memory number = abi.encode(1);
+        return number;
+    }
+
+    // You'd use this to make calls to contracts
+    function encodeString() public pure returns (bytes memory) {
+        bytes memory someString = abi.encode("some string");
+        return someString;
+    }
+
+    // encodes the two strings together as one opcode
+     function multiEncode() public pure returns (bytes memory) {
+        bytes memory someString = abi.encode("some string", "it's bigger!");
+        return someString;
+    }
+
+```
+
+`abi.encodePacked` examples:
+```js
+ // https://forum.openzeppelin.com/t/difference-between-abi-encodepacked-string-and-bytes-string/11837
+    // encodePacked
+    // This is great if you want to save space, not good for calling functions.
+    // You can sort of think of it as a compressor for the massive bytes object above.
+    function encodeStringPacked() public pure returns (bytes memory) {
+        bytes memory someString = abi.encodePacked("some string");
+        return someString;
+    }
+
+    // encodes the two strings together as one opcode
+     function multiEncodePacked() public pure returns (bytes memory) {
+        bytes memory someString = abi.encodePacked("some string", "it's bigger!");
+        return someString;
+    }
+```
+
+`abi.decode` examples:
+```js
+ function decodeString() public pure returns (string memory) {
+        string memory someString = abi.decode(encodeString(), (string));
+        return someString;
+    }
+
+    // Gas: 24612
+    // decode the two strings and keeps them as two different strings
+    function multiDecode() public pure returns (string memory, string memory) {
+        (string memory someString, string memory someOtherString) = abi.decode(multiEncode(), (string, string));
+        return (someString, someOtherString);
+    }
+```
+
+
+Examples of what does not work vs what does:
+```js
+  // This doesn't work!
+    function multiDecodePacked() public pure returns (string memory) {
+        string memory someString = abi.decode(multiEncodePacked(), (string));
+        return someString;
+    }
+
+    // This does!
+    // Gas: 22313
+    function multiStringCastPacked() public pure returns (string memory) {
+        string memory someString = string(multiEncodePacked());
+        return someString;
+    }
+```
+
+How to use `abi.encodePacked` in tests:
+
+example from foundry-nft-f23:
+```js
+contract BasicNftTest is Test {
+
+    string public constant PUG =
+        "ipfs://bafybeig37ioir76s7mg5oobetncojcm3c3hxasyd4rvid4jqhy4gkaheg4/?filename=0-PUG.json";
+
+    // ... skipped code
+
+    // Test to verify the NFT contract was deployed with the correct name
+    function testNameIsCorrect() public view {
+        // Define the expected name that we set in the constructor
+        string memory expectedName = "Dogie";
+        // Get the actual name from the deployed contract
+        string memory actualName = basicNft.name();
+        // We can't directly compare strings in Solidity, so we:
+        // 1. Convert both strings to bytes using abi.encodePacked
+        // 2. Hash both byte arrays using keccak256
+        // 3. Compare the resulting hashes
+        assert(keccak256(abi.encodePacked(expectedName)) == keccak256(abi.encodePacked(actualName)));
+    }
+
+    // Test to verify NFT minting works and updates balances correctly
+    function testCanMintAndHaveABalance() public {
+        // Use Forge's prank function to make subsequent calls appear as if they're from USER
+        vm.prank(USER);
+        // Mint a new NFT with our test URI (PUG)
+        basicNft.mintNft(PUG);
+
+        // Verify the USER now owns exactly 1 NFT
+        assert(basicNft.balanceOf(USER) == 1);
+        // Verify the token URI was stored correctly for token ID 0
+        // Using the same string comparison technique as above since we can't directly compare strings
+        assert(keccak256(abi.encodePacked(PUG)) == keccak256(abi.encodePacked(basicNft.tokenURI(0))));
+    }
+}
+```
+
+example from foundry-nft-f23:
+```js
+ function testFlipTokenToSad() public {
+        // Start a series of transactions from USER address
+        vm.startPrank(USER);
+
+        // Mint a new NFT
+        moodNft.mintNft();
+
+        // Flip the mood of token 0 from happy to sad
+        moodNft.flipMood(0);
+
+        // Log the token URI for verification
+        console.log(moodNft.tokenURI(0));
+
+        // Verify the token URI matches the expected SAD SVG URI
+        assertEq(keccak256(abi.encodePacked(moodNft.tokenURI(0))), keccak256(abi.encodePacked(SAD_SVG_URI)));
+    }
+```
+
+example from foundry-nft-f23:
+```js
+    // Test function to verify SVG to URI conversion
+    function testConvertSvgToUri() public view {
+        // Expected URI after base64 encoding the SVG
+        string memory expectedUri =
+            "data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+IDxjaXJjbGUgY3g9IjEwMCIgY3k9IjEwMCIgZmlsbD0ieWVsbG93IiByPSI3OCIgc3Ryb2tlPSJibGFjayIgc3Ryb2tlLXdpZHRoPSIzIiAvPiA8ZyBjbGFzcz0iZXllcyI+IDxjaXJjbGUgY3g9IjQ1IiBjeT0iMTAwIiByPSIxMiIgLz4gPGNpcmNsZSBjeD0iMTU0IiBjeT0iMTAwIiByPSIxMiIgLz4gPC9nPiA8cGF0aCBkPSJtMTM2LjgxIDExNi41M2MuNjkgMjYuMTctNjQuMTEgNDItODEuNTItLjczIiBzdHlsZT0iZmlsbDpub25lOyBzdHJva2U6IGJsYWNrOyBzdHJva2Utd2lkdGg6IDM7IiAvPiA8L3N2Zz4=";
+
+        // Raw SVG data to be converted
+        string memory svg =
+            '<svg viewBox="0 0 200 200" width="400" height="400" xmlns="http://www.w3.org/2000/svg"> <circle cx="100" cy="100" fill="yellow" r="78" stroke="black" stroke-width="3" /> <g class="eyes"> <circle cx="45" cy="100" r="12" /> <circle cx="154" cy="100" r="12" /> </g> <path d="m136.81 116.53c.69 26.17-64.11 42-81.52-.73" style="fill:none; stroke: black; stroke-width: 3;" /> </svg>';
+
+        // Convert the SVG to URI using our contract's function
+        string memory actualUri = deployer.svgToImageURI(svg);
+
+        // Verify the conversion matches our expected result
+        // Using keccak256 hash comparison for string equality
+        assert(keccak256(abi.encodePacked(expectedUri)) == keccak256(abi.encodePacked(actualUri)));
+
+        // Log both URIs for manual verification
+        console.log("expectedUri:", expectedUri);
+        console.log("actualUri:", actualUri);
+    }
+```
+
+
+
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -3392,7 +3583,7 @@ You can learn more about NFTs and their contracts @ `https://eips.ethereum.org/E
 
 When creating the NFT, you must store the image somewhere on the internet and have your contract point to it. There are different places to store the image, and the most popular ways are IPFS, https://IPFS, and directly on chain. Let's take a look at the pros and cons of each one of these:
 
-`IPFS` (Interplanetary File System): IPFS is a series of nodes that can store data. You can upload your image here, however someone would need to pin it constantly and not have their laptop/node turned off in order to keep the image visible. If you choose to use this, then you can use services like `Pinata.cloud` that will pin your images for you, this way you know at least one other person in pinning your images on IPFS. Rating: Medium Recommended
+`IPFS` (Interplanetary File System): IPFS is a series of nodes that can store data. You can upload your image here, however someone would need to pin it constantly and not have their laptop/node turned off in order to keep the image visible. If you choose to use this, then you can use services like `Pinata.cloud` that will pin your images for you, this way you know at least one other person in pinning your images on IPFS. Rating: Medium Recommended. (Note: There are other options than IPFS, like Arweave and FileCoin (website file.storage will help you deploy to fileCoin and other places ))
 
 `Https://IPFS`: This is the centralized browser/website version of IPFS, if this website goes down, so does the image of your NFT. Rating: NOT RECCOMENDED!
 
@@ -3472,6 +3663,14 @@ example:
     function tokenURI(uint256 tokenId) public view override returns (string memory) {}
 ```
 5. Then we are going to create a new folder named `img`, and move the image of the NFT that we want into this folder.
+
+6. Upload your Image to IPFS and get the hash and use this hash as the image URI for your nft.
+example:
+```js
+function tokenURI(uint256 token) public view override returns (string memory) {
+    return "ipfs://<hash-Goes-Here>"
+}
+```
 
 
 #### How Creating NFTs on-Chain Works
