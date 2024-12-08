@@ -22,7 +22,7 @@ Getting Started Notes
     - Constructor Notes
     - Event Notes
     - Enum Notes
-    - Call Notes
+    - Call and staticcall differences Notes
     - Inheritance Notes
     - Inheriting Constructor Notes
     - Override Notes
@@ -32,6 +32,7 @@ Getting Started Notes
     - Remappings in foundry.toml Notes
     - abi.encode Notes & abi.encodePacked Notes
     - How to use abi.encode and abi.decode Notes
+    - Function Selector & Function Signature Notes
 
 Package Installing Notes
 
@@ -69,6 +70,8 @@ DEPLOYING PRODUCTION CONTRACT Notes
 
 How to interact with deployed contracts from the command line Notes
     - CAST SIG NOTES
+    - cast --calldata-decode Notes
+    - How to be safe when interacting with contracts
 
 TIPS AND TRICKS
 
@@ -741,7 +744,7 @@ In enums:
 
 
 
-### Call Notes
+### Call and staticcall differences Notes
 
 In a function call, what is the difference between 'call' and 'staticcall'?
 
@@ -1131,6 +1134,46 @@ example from foundry-nft-f23:
         console.log("actualUri:", actualUri);
     }
 ```
+
+
+
+
+
+### Function Selector & Function Signature Notes
+
+The function Signature is the function name and its parameters:
+example:
+
+if the function is:
+```js
+function transferFrom(address src, address dst, uint256 wad) {
+    // ... code skipped
+}
+```
+Then the function signature would be:
+```js
+// the function name and its parameters
+transferFrom(address,address,uint256)
+```
+
+
+The Function Selector is the first four bytes of the function signature:
+example:
+```js
+// this would be the function selector of the function signature above (of function transferFrom above)
+// if we encode the transferFrom function selector (found above) we would get this function selector:
+0x23b872dd
+```
+These are the first four bytes because opcodes in the evm are defined in two digits/units. so the first four bytes are: `23` `b8` `72` `dd` to make the function selector of `0x23b872dd`
+
+
+if you want to interact with an outside contract from within a contract, its best to use an interface instead of a lowlevel call for security reasons
+
+
+If you want more information, you can find it at ` https://updraft.cyfrin.io/courses/advanced-foundry/how-to-create-an-NFT-collection/evm-signatures-selectors ` - This video also goes over how to call any contracts/function even without having an interface
+
+
+
 
 
 
@@ -2354,6 +2397,35 @@ Example:
 ```
 
 Sometimes you will not know what the function's hex is. But there are function signature databases that we can use (like `openChain.xyz` and we go to signature database). If you paste in the function selector/ hex data and press search, it has a database of different hashes/hex data and the name of the function associated with it. So this way we can see what hex data is associated with what functions. These databases only work if someone actually updates them. Foundry has a way to automatically update these databases (Check foundry docs).
+
+
+
+### cast --calldata-decode Notes
+
+When doing a transaction on a websites frontend, metamask pops up with three tabs, "DETAILS", "DATA", and "HEX". if you click on the hex and scroll down, you will see the hex data. This encoded hex-data is information from the transaction, and to see exactly what this transaction is doing, we can use `cast --calldata-decode` to decode this bytecode.
+
+You would use this in the following format:
+Run `cast --calldata-decode <"function signature"> <encoded hex-data-from-metamask>`
+
+example:
+`cast --calldata-decode "transferFrom(address,address,uint256)" 0x12345678909876543211234567890987654321`
+
+This will return what values are being passed in this transaction for the parameters.
+
+
+
+
+
+### How to be safe when interacting with contracts
+
+1. Check the address (read the function) - can be read on etherscan
+2. Check the function selector - check section `Function Selector & Function Signature Notes` & `cast sig notes`
+3. Decode the calldata (check the paramters) - check section `cast --calldata-decode Notes` 
+
+It is important to check the contracts, functions, and parameters being sent when interacting with external contract with frontend wallets or backend to make sure we are being safe and not being scammed in any way. This is especially important when working with real money and large amounts of money 
+
+
+
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
