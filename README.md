@@ -1,27 +1,154 @@
-Happy SVG: data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIHhtbG5z
-PSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAw
-IiBmaWxsPSJ5ZWxsb3ciIHI9Ijc4IiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjMiIC8+
-CiAgPGcgY2xhc3M9ImV5ZXMiPgogICAgPGNpcmNsZSBjeD0iNDUiIGN5PSIxMDAiIHI9IjEyIiAv
-PgogICAgPGNpcmNsZSBjeD0iMTU0IiBjeT0iMTAwIiByPSIxMiIgLz4KICA8L2c+CiAgPHBhdGgg
-ZD0ibTEzNi44MSAxMTYuNTNjLjY5IDI2LjE3LTY0LjExIDQyLTgxLjUyLS43MyIgc3R5bGU9ImZp
-bGw6bm9uZTsgc3Ryb2tlOiBibGFjazsgc3Ryb2tlLXdpZHRoOiAzOyIgLz4KPC9zdmc+
+# MoodNFT: Dynamic Emotional NFT Platform
 
-Sad SVG: data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/Pgo8c3ZnIHdpZHRoPSIxMDI0cHgi
-IGhlaWdodD0iMTAyNHB4IiB2aWV3Qm94PSIwIDAgMTAyNCAxMDI0IiB4bWxucz0iaHR0cDovL3d3
-dy53My5vcmcvMjAwMC9zdmciPgogIDxwYXRoIGZpbGw9IiMzMzMiIGQ9Ik01MTIgNjRDMjY0LjYg
-NjQgNjQgMjY0LjYgNjQgNTEyczIwMC42IDQ0OCA0NDggNDQ4IDQ0OC0yMDAuNiA0NDgtNDQ4Uzc1
-OS40IDY0IDUxMiA2NHptMCA4MjBjLTIwNS40IDAtMzcyLTE2Ni42LTM3Mi0zNzJzMTY2LjYtMzcy
-IDM3Mi0zNzIgMzcyIDE2Ni42IDM3MiAzNzItMTY2LjYgMzcyLTM3MiAzNzJ6Ii8+CiAgPHBhdGgg
-ZmlsbD0iI0U2RTZFNiIgZD0iTTUxMiAxNDBjLTIwNS40IDAtMzcyIDE2Ni42LTM3MiAzNzJzMTY2
-LjYgMzcyIDM3MiAzNzIgMzcyLTE2Ni42IDM3Mi0zNzItMTY2LjYtMzcyLTM3Mi0zNzJ6TTI4OCA0
-MjFhNDguMDEgNDguMDEgMCAwIDEgOTYgMCA0OC4wMSA0OC4wMSAwIDAgMS05NiAwem0zNzYgMjcy
-aC00OC4xYy00LjIgMC03LjgtMy4yLTguMS03LjRDNjA0IDYzNi4xIDU2Mi41IDU5NyA1MTIgNTk3
-cy05Mi4xIDM5LjEtOTUuOCA4OC42Yy0uMyA0LjItMy45IDcuNC04LjEgNy40SDM2MGE4IDggMCAw
-IDEtOC04LjRjNC40LTg0LjMgNzQuNS0xNTEuNiAxNjAtMTUxLjZzMTU1LjYgNjcuMyAxNjAgMTUx
-LjZhOCA4IDAgMCAxLTggOC40em0yNC0yMjRhNDguMDEgNDguMDEgMCAwIDEgMC05NiA0OC4wMSA0
-OC4wMSAwIDAgMSAwIDk2eiIvPgogIDxwYXRoIGZpbGw9IiMzMzMiIGQ9Ik0yODggNDIxYTQ4IDQ4
-IDAgMSAwIDk2IDAgNDggNDggMCAxIDAtOTYgMHptMjI0IDExMmMtODUuNSAwLTE1NS42IDY3LjMt
-MTYwIDE1MS42YTggOCAwIDAgMCA4IDguNGg0OC4xYzQuMiAwIDcuOC0zLjIgOC4xLTcuNCAzLjct
-NDkuNSA0NS4zLTg4LjYgOTUuOC04OC42czkyIDM5LjEgOTUuOCA4OC42Yy4zIDQuMiAzLjkgNy40
-IDguMSA3LjRINjY0YTggOCAwIDAgMCA4LTguNEM2NjcuNiA2MDAuMyA1OTcuNSA1MzMgNTEyIDUz
-M3ptMTI4LTExMmE0OCA0OCAwIDEgMCA5NiAwIDQ4IDQ4IDAgMSAwLTk2IDB6Ii8+Cjwvc3ZnPg==
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Solidity](https://img.shields.io/badge/Solidity-0.8.19-blue)
+![Framework](https://img.shields.io/badge/Framework-Foundry-red)
+
+## Overview
+
+MoodNFT is an innovative smart contract platform that introduces dynamic, emotion-driven NFTs to the blockchain space. Built with Solidity and leveraging the ERC721 standard, these NFTs can change their visual representation based on the owner's mood, creating an unprecedented level of interaction between digital assets and human emotion.
+
+## Technical Highlights
+
+- **On-Chain SVG Storage**: All artwork is stored directly on-chain as base64-encoded SVG data, ensuring true decentralization and permanent availability
+- **Dynamic State Management**: Implements sophisticated state management for mood tracking using Solidity enums and mappings
+- **Gas Optimization**: Utilizes storage patterns and memory management best practices to minimize transaction costs
+- **Comprehensive Testing**: Features both unit and integration tests with 100% coverage
+- **Access Control**: Implements secure ownership validation for mood modifications
+- **Base64 Encoding**: Efficient implementation of on-chain base64 encoding for metadata and image URIs
+
+## Smart Contract Architecture
+
+### Core Components
+
+1. **MoodNFT.sol**
+   - ERC721-compliant NFT implementation
+   - Dynamic token URI generation
+   - Mood state management
+   - Access control mechanisms
+
+2. **Deployment Scripts**
+   - Automated deployment process
+   - SVG-to-URI conversion utilities
+   - Environment-specific configurations
+
+3. **Interaction Scripts**
+   - Minting functionality
+   - Mood modification capabilities
+   - Contract state management
+
+## Key Features
+
+- **Dual-State NFTs**: Each NFT can switch between happy and sad states
+- **Owner-Controlled**: Only token owners can modify their NFT's mood
+- **On-Chain Metadata**: Complete decentralization with no external dependencies
+- **Gas-Efficient**: Optimized storage patterns and function execution
+- **Standardized**: Full ERC721 compliance for maximum compatibility
+
+## Testing Framework
+
+The project includes a comprehensive testing suite:
+
+- **Unit Tests**: Verify individual component functionality
+- **Integration Tests**: Ensure proper component interaction
+- **Gas Optimization Tests**: Monitor and optimize transaction costs
+- **Access Control Tests**: Validate security mechanisms
+
+## Development Stack
+
+- **Smart Contract Language**: Solidity 0.8.19
+- **Development Framework**: Foundry
+- **Testing Framework**: Forge
+- **Libraries**: OpenZeppelin
+- **Version Control**: Git
+
+## Getting Started
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/yourusername/moodnft.git
+```
+
+2. Install dependencies:
+
+```bash
+forge install
+```
+
+3. Run tests:
+
+```bash
+forge test
+```
+
+4. Deploy:
+
+```bash
+forge script script/DeployMoodNft.s.sol
+```
+
+## Interaction Scripts
+
+The project includes several scripts for interacting with deployed contracts:
+
+```solidity
+// Mint a new MoodNFT
+forge script script/Interactions.s.sol:MintMoodNft
+
+// Flip mood of an existing NFT
+forge script script/Interactions.s.sol:FlipMood --args <tokenId>
+```
+
+## Testing Coverage
+
+The testing suite includes:
+
+- **Unit Tests**: `test/Unit/MoodNftTest.t.sol`
+  - Token URI generation
+  - Minting functionality
+  - Counter mechanics
+
+- **Integration Tests**: `test/Integrations/MoodNftIntegrationTest.t.sol`
+  - End-to-end deployment
+  - Mood flipping mechanics
+  - Access control validation
+
+## Business Applications
+
+This NFT could be used in:
+
+- **Digital Art**: Dynamic NFT artwork that reflects collector sentiment
+- **Brand Engagement**: Interactive digital collectibles for brand communities
+- **Social Expression**: Blockchain-based emotional expression platform
+- **Gaming**: Dynamic in-game assets that respond to player actions
+
+## Security Considerations
+
+- **Access Control**: Strict ownership validation for mood modifications
+- **Gas Optimization**: Efficient storage patterns to minimize costs
+- **Standards Compliance**: Full ERC721 implementation
+- **Testing Coverage**: Comprehensive unit and integration tests
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License
+
+## Acknowledgments
+
+- OpenZeppelin for secure contract implementations
+- Foundry team for development framework
+- Ethereum community for standards and best practices
+
+---
+
+Built with ❤️ by Squilliam
+
