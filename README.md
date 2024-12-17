@@ -22,12 +22,14 @@ MoodNFT is an innovative smart contract platform that introduces dynamic, emotio
 ### Core Components
 
 1. **MoodNFT.sol**
+
    - ERC721-compliant NFT implementation
    - Dynamic token URI generation
    - Mood state management
    - Access control mechanisms
 
 2. **Deployment Scripts**
+
    - Automated deployment process
    - SVG-to-URI conversion utilities
    - Environment-specific configurations
@@ -67,7 +69,7 @@ The project includes a comprehensive testing suite:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/moodnft.git
+git clone https://github.com/SquilliamX/NFTs-2024.git
 ```
 
 2. Install dependencies:
@@ -105,6 +107,7 @@ forge script script/Interactions.s.sol:FlipMood --args <tokenId>
 The testing suite includes:
 
 - **Unit Tests**: `test/Unit/MoodNftTest.t.sol`
+
   - Token URI generation
   - Minting functionality
   - Counter mechanics
@@ -151,4 +154,3 @@ This project is licensed under the MIT License
 ---
 
 Built with ❤️ by Squilliam
-
